@@ -1,4 +1,4 @@
-package com.tobibur.subalarm.presentation.navigation.screens.home
+package com.tobibur.subalarm.presentation.screens.home
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,18 +10,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
 @Composable
-fun HomeScreen() {
+fun AlarmDetailScreen(alarmId: Int) {
+
     Box(modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = "Home Screen",
+                text = "Add Alarm Screen for $alarmId",
                 style = MaterialTheme.typography.titleLarge,
             )
             Text(
-                text = "This is the home screen view.",
+                text = "This is the add alarm screen view. #$alarmId",
                 style = MaterialTheme.typography.bodyLarge,
             )
         }
-    }
-}
+    }}
