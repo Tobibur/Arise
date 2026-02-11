@@ -11,13 +11,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AlarmAdd
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -101,28 +98,6 @@ fun AlarmItemCard(
     }
 }
 
-@Composable
-fun SwitchWithIcon(modifier: Modifier, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
-
-    Switch(
-        modifier = modifier,
-        checked = checked,
-        onCheckedChange = {
-            onCheckedChange(it)
-        },
-        thumbContent = if (checked) {
-            {
-                Icon(
-                    imageVector = Icons.Filled.Check,
-                    contentDescription = null,
-                    modifier = Modifier.size(SwitchDefaults.IconSize),
-                )
-            }
-        } else {
-            null
-        }
-    )
-}
 
 @Preview
 @Composable

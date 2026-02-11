@@ -11,12 +11,12 @@ object DummyAlarms {
                 Alarm(
                     id = i,
                     title = "Alarm no $i",
-                    time = Clock.System.now().toEpochMilliseconds(),
+                    time = System.currentTimeMillis(),
                     subAlarms = listOf(
                         SubAlarm(
                             id = 1,
                             title = "Sub Alarm 1",
-                            time = System.currentTimeMillis()
+                            time = System.currentTimeMillis().plus(600_000)
                         )
                     )
                 )

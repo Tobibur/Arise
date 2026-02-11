@@ -8,8 +8,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -40,30 +43,49 @@ fun AppNavHost() {
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = when (currentRoute) {
-                            NavScreen.Home.route -> "SubAlarm"
-                            NavScreen.Analytics.route -> "Analytics"
-                            NavScreen.Settings.route -> "Settings"
-                            else -> "SubAlarm"
+            if (currentRoute == NavScreen.AlarmDetails.route) {
+                val alarmId = navBackStackEntry?.arguments?.getInt("alarmId") ?: 0
+                val title = if (alarmId == 0) "Add New Alarm" else "Edit Alarm"
+                CenterAlignedTopAppBar(
+                    title = { Text(text = title, style = MaterialTheme.typography.titleMedium) },
+                    navigationIcon = {
+                        TextButton(onClick = { navController.navigateUp() }) {
+                            Text(text = "Cancel")
                         }
-                    )
-                },
-                navigationIcon = {
-                    if (canGoBack) {
-                        IconButton(onClick = {
-                            navController.navigateUp()
-                        }) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Back"
+                    },
+                    actions = {
+                        TextButton(onClick = { /* TODO: save alarm */ }) {
+                            Text(
+                                text = "Done",
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
                     }
-                }
-            )
+                )
+            } else {
+                TopAppBar(
+                    title = {
+                        Text(
+                            text = when (currentRoute) {
+                                NavScreen.Home.route -> "SubAlarm"
+                                NavScreen.Analytics.route -> "Analytics"
+                                NavScreen.Settings.route -> "Settings"
+                                else -> "SubAlarm"
+                            }
+                        )
+                    },
+                    navigationIcon = {
+                        if (canGoBack) {
+                            IconButton(onClick = { navController.navigateUp() }) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = "Back"
+                                )
+                            }
+                        }
+                    }
+                )
+            }
         },
         floatingActionButton = {
             if (currentRoute == NavScreen.Home.route) {

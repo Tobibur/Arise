@@ -12,12 +12,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircleOutline
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.rememberTimePickerState
@@ -29,22 +34,59 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.tobibur.subalarm.data.DummyAlarms
+import com.tobibur.subalarm.presentation.components.CustomIconButton
+import com.tobibur.subalarm.presentation.components.SubAlarmItemCard
+import com.tobibur.subalarm.presentation.components.SwitchWithIcon
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
+import java.util.Locale
+import kotlin.math.abs
 
 @Composable
 fun AlarmDetailScreen(alarmId: Int) {
+    val alarm = DummyAlarms.alarms.first()
 
-    Column(
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        TimePickerLayout(onConfirm = {}) { }
-
-        AlarmTitleField()
-        RepeatAlarmLayout()
+        item { TimePickerLayout(onConfirm = {}) { } }
+        item { AlarmTitleField() }
+        //item { RepeatAlarmLayout() }
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "SUB ALARMS",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
+                CustomIconButton(
+                    onClick = {},
+                    text = "ADD NEW",
+                    icon = Icons.Default.AddCircleOutline
+                )
+            }
+        }
+        items(items = alarm.subAlarms, key = { it.id }) { subAlarm ->
+            SubAlarmItemCard(
+                modifier = Modifier,
+                title = subAlarm.title,
+                time = formatSubAlarmTime(alarm.time, subAlarm.time),
+                isActive = subAlarm.isActive,
+                onSwitchChange = { !subAlarm.isActive }
+            ) { }
+        }
     }
 }
 
@@ -76,15 +118,24 @@ fun TimePickerLayout(
 fun AlarmTitleField() {
     var text by remember { mutableStateOf("") }
 
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column {
 
-        // Top label
-        Text(
-            text = "ALARM TITLE",
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-        )
-
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "ALARM TITLE",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            )
+            CustomIconButton(
+                onClick = {},
+                text = "OPTIONS",
+                icon = Icons.Default.Settings
+            )
+        }
         Spacer(Modifier.height(8.dp))
 
         BasicTextField(
@@ -93,6 +144,7 @@ fun AlarmTitleField() {
             textStyle = MaterialTheme.typography.titleMedium.copy(
                 color = MaterialTheme.colorScheme.onSurface
             ),
+            cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
             singleLine = true,
             decorationBox = { innerTextField ->
 
@@ -130,7 +182,7 @@ fun RepeatAlarmLayout() {
     val todayIndex = (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + 5) % 7
     var selectedDays by remember { mutableStateOf(setOf(todayIndex)) }
 
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column {
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -142,7 +194,8 @@ fun RepeatAlarmLayout() {
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
             )
-            Switch(
+            SwitchWithIcon(
+                modifier = Modifier.scale(0.7f),
                 checked = isRepeatEnabled,
                 onCheckedChange = {
                     isRepeatEnabled = it
@@ -203,6 +256,13 @@ fun RepeatAlarmLayout() {
             }
         }
     }
+}
+
+private fun formatSubAlarmTime(alarmTime: Long, subAlarmTime: Long): String {
+    val diffMinutes = abs(subAlarmTime - alarmTime) / 60_000
+    val sign = if (subAlarmTime >= alarmTime) "+" else "-"
+    val timeFormatted = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date(subAlarmTime))
+    return "$sign$diffMinutes min ($timeFormatted)"
 }
 
 

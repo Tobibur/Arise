@@ -3,5 +3,6 @@ package com.tobibur.subalarm.data
 data class SubAlarm(
     val id: Int,
     val title: String,
-    val time: Long
+    val time: Long,
+    val isActive: Boolean = true
 )
