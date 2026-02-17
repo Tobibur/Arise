@@ -1,5 +1,6 @@
-package com.tobibur.subalarm.presentation.screens.home
+package com.tobibur.subalarm.presentation.screens.alarms
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,7 +18,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircleOutline
 import androidx.compose.material.icons.filled.Settings
@@ -25,8 +25,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,31 +37,67 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.tobibur.subalarm.data.DummyAlarms
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tobibur.subalarm.presentation.components.CustomIconButton
 import com.tobibur.subalarm.presentation.components.SubAlarmItemCard
 import com.tobibur.subalarm.presentation.components.SwitchWithIcon
+import com.tobibur.subalarm.presentation.utils.convertTime
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import kotlin.math.abs
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AlarmDetailScreen(alarmId: Int) {
-    val alarm = DummyAlarms.alarms.first()
+fun AlarmDetailScreen(
+    onDone: (() -> Unit) -> Unit,
+    viewModel: AlarmDetailsViewModel = hiltViewModel()
+) {
+
+    val alarm = viewModel.alarmUIState.collectAsStateWithLifecycle().value
+    val calendar = Calendar.getInstance()
+
+    val timePickerState = rememberTimePickerState(
+        initialHour = calendar.get(Calendar.HOUR_OF_DAY),
+        initialMinute = calendar.get(Calendar.MINUTE),
+        is24Hour = false,
+    )
+
+    LaunchedEffect(alarm.time) {
+        if (alarm.id != 0L) {
+            calendar.timeInMillis = alarm.time
+            timePickerState.hour = calendar.get(Calendar.HOUR_OF_DAY)
+            timePickerState.minute = calendar.get(Calendar.MINUTE)
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        onDone {
+            viewModel.onTimeChanged(convertTime(timePickerState.hour, timePickerState.minute))
+            viewModel.saveAlarm()
+        }
+    }
 
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp),
+            .padding(vertical = 8.dp, horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        item { TimePickerLayout(onConfirm = {}) { } }
-        item { AlarmTitleField() }
-        //item { RepeatAlarmLayout() }
+        item {
+            TimePickerLayout(timePickerState)
+        }
+        item {
+            AlarmTitleField(alarm.title) {
+                viewModel.onTitleChanged(it)
+            }
+        }
+        item { RepeatAlarmLayout() }
         item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -92,18 +130,8 @@ fun AlarmDetailScreen(alarmId: Int) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TimePickerLayout(
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit,
-) {
-    val currentTime = Calendar.getInstance()
-
-    val timePickerState = rememberTimePickerState(
-        initialHour = currentTime.get(Calendar.HOUR_OF_DAY),
-        initialMinute = currentTime.get(Calendar.MINUTE),
-        is24Hour = false,
-    )
-
+fun TimePickerLayout(timePickerState: TimePickerState) {
+    Log.d("TAG", "TimePickerLayout: ${timePickerState.hour}")
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -115,8 +143,7 @@ fun TimePickerLayout(
 }
 
 @Composable
-fun AlarmTitleField() {
-    var text by remember { mutableStateOf("") }
+fun AlarmTitleField(title: String = "", onTitleChanged: (String) -> Unit) {
 
     Column {
 
@@ -139,8 +166,10 @@ fun AlarmTitleField() {
         Spacer(Modifier.height(8.dp))
 
         BasicTextField(
-            value = text,
-            onValueChange = { text = it },
+            value = title,
+            onValueChange = { newText ->
+                onTitleChanged(newText)
+            },
             textStyle = MaterialTheme.typography.titleMedium.copy(
                 color = MaterialTheme.colorScheme.onSurface
             ),
@@ -159,7 +188,7 @@ fun AlarmTitleField() {
                 ) {
 
                     // Hint / Placeholder — visible only when empty, disappears on typing
-                    if (text.isEmpty()) {
+                    if (title.isEmpty()) {
                         Text(
                             text = "e.g. Work Morning",
                             style = MaterialTheme.typography.titleMedium.copy(
@@ -269,5 +298,5 @@ private fun formatSubAlarmTime(alarmTime: Long, subAlarmTime: Long): String {
 @Preview(showBackground = true)
 @Composable
 fun AlarmDetailScreenPreview() {
-    AlarmDetailScreen(alarmId = 1)
+    AlarmDetailScreen(onDone = {})
 }

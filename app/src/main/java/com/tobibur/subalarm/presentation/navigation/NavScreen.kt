@@ -5,6 +5,6 @@ sealed class NavScreen(val route: String) {
     object Analytics : NavScreen("analytics")
     object Settings : NavScreen("settings")
     object AlarmDetails : NavScreen("alarmDetails/{alarmId}") {
-        fun createRoute(alarmId: Int) = "alarmDetails/$alarmId"
+        fun createRoute(alarmId: Long) = "alarmDetails/$alarmId"
     }
 }
