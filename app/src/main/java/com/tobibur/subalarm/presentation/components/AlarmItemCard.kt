@@ -31,6 +31,7 @@ fun AlarmItemCard(
     time: String,
     amOrPm: String = "AM",
     subAlarmCount: Int,
+    repeatDays: Int = 0,
     isActive: Boolean,
     onSwitchChange: (Boolean) -> Unit,
     onClick: () -> Unit
@@ -74,11 +75,21 @@ fun AlarmItemCard(
                     onSwitchChange(it)
                 }
             }
-            Text(
-                text = title,
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.bodyLarge
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = title,
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Text(
+                    text = if (repeatDays > 0) ", (R)" else ", today",
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
             Spacer(modifier = Modifier.height(8.dp))
             Row(modifier = Modifier.fillMaxWidth()) {
                 //Add an icon

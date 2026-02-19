@@ -5,5 +5,6 @@ data class Alarm(
     val title: String,
     val time: Long,
     val subAlarms: List<SubAlarm>,
+    val repeatDays: Int = 0,
     val isActive: Boolean = true
 )

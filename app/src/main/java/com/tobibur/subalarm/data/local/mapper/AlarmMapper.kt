@@ -12,6 +12,7 @@ fun AlarmWithSubAlarms.toDomain(): Alarm = Alarm(
     title = alarm.title,
     time = alarm.time,
     isActive = alarm.isActive,
+    repeatDays = alarm.repeatDays,
     subAlarms = subAlarms.map { it.toDomain() }
 )
 
@@ -21,7 +22,7 @@ fun SubAlarmEntity.toDomain(): SubAlarm = SubAlarm(
 
 // Domain → Entity
 fun Alarm.toEntity(): AlarmEntity = AlarmEntity(
-    id = id, title = title, time = time, isActive = isActive
+    id = id, title = title, time = time, repeatDays = repeatDays, isActive = isActive
 )
 
 fun SubAlarm.toEntity(alarmId: Long): SubAlarmEntity = SubAlarmEntity(

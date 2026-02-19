@@ -33,11 +33,19 @@ import java.util.Locale
 @Composable
 fun AlarmHomeScreen(onAlarmClick: (Long) -> Unit, viewModel: AlarmHomeViewModel = hiltViewModel()) {
     val alarms = viewModel.alarms.collectAsStateWithLifecycle()
-    AlarmHomeContent(alarms = alarms.value, onAlarmClick = onAlarmClick)
+    AlarmHomeContent(
+        alarms = alarms.value,
+        onAlarmClick = onAlarmClick,
+        onToggleAlarm = viewModel::toggleAlarmActive
+    )
 }
 
 @Composable
-fun AlarmHomeContent(alarms: List<Alarm>, onAlarmClick: (Long) -> Unit) {
+fun AlarmHomeContent(
+    alarms: List<Alarm>,
+    onAlarmClick: (Long) -> Unit,
+    onToggleAlarm: (Long, Boolean) -> Unit
+) {
     if (alarms.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -72,8 +80,11 @@ fun AlarmHomeContent(alarms: List<Alarm>, onAlarmClick: (Long) -> Unit) {
                     time = time,
                     amOrPm = amPm,
                     subAlarmCount = alarm.subAlarms.size,
+                    repeatDays = alarm.repeatDays,
                     isActive = alarm.isActive,
-                    onSwitchChange = { !alarm.isActive }
+                    onSwitchChange = { isActive ->
+                        onToggleAlarm(alarm.id, isActive)
+                    }
                 ) {
                     // On card click, navigate to view alarm screen
                     onAlarmClick(alarm.id)
@@ -95,7 +106,11 @@ fun formatTime(time: Long): Pair<String, String> {
 @Composable
 fun HomeScreenEmptyPreview() {
     SubAlarmTheme {
-        AlarmHomeContent(alarms = emptyList(), onAlarmClick = {})
+        AlarmHomeContent(
+            alarms = emptyList(),
+            onAlarmClick = {},
+            onToggleAlarm = { _, _ -> }
+        )
     }
 }
 
@@ -113,7 +128,8 @@ fun HomeHomeScreenPreview() {
                     isActive = true
                 )
             ),
-            onAlarmClick = {}
+            onAlarmClick = {},
+            onToggleAlarm = { _, _ -> }
         )
     }
 }

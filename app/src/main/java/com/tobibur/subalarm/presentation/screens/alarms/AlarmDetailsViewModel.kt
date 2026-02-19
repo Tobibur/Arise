@@ -29,6 +29,7 @@ class AlarmDetailsViewModel @Inject constructor(
             id = alarmId,
             title = "",
             time = System.currentTimeMillis(),
+            repeatDays = 0,
             subAlarms = emptyList(),
         )
     )
@@ -76,6 +77,14 @@ class AlarmDetailsViewModel @Inject constructor(
             )
         }
     }
+
+   fun onRepeatDaysChanged(repeatDays: Int) {
+       _alarmUIState.update {
+           it.copy(
+               repeatDays = repeatDays
+           )
+       }
+   }
 
     fun onSubAlarmAdded(){
         _alarmUIState.update {
