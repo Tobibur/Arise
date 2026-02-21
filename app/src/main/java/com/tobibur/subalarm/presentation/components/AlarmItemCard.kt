@@ -85,7 +85,7 @@ fun AlarmItemCard(
                     style = MaterialTheme.typography.bodyLarge
                 )
                 Text(
-                    text = if (repeatDays > 0) ", (R)" else ", today",
+                    text = if (repeatDays > 0) ". ${getRepeatDaysString(repeatDays)}" else ", today",
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodyLarge
                 )
@@ -109,6 +109,25 @@ fun AlarmItemCard(
     }
 }
 
+fun getRepeatDaysString(repeatDays: Int): String {
+    return (0..6).filter { i -> repeatDays and (1 shl i) != 0 }.joinToString(", ") {
+        getDayString(it)
+    }
+}
+
+fun getDayString(day: Int): String {
+    return when (day) {
+        0 -> "Mon"
+        1 -> "Tue"
+        2 -> "Wed"
+        3 -> "Thu"
+        4 -> "Fri"
+        5 -> "Sat"
+        6 -> "Sun"
+        else -> "(R)"
+    }
+}
+
 
 @Preview
 @Composable
@@ -118,6 +137,7 @@ fun AlarmItemCardPreview() {
         title = "Alarm Title",
         time = "12:00",
         isActive = false,
+        repeatDays = 64,
         subAlarmCount = 2,
         onSwitchChange = {}
     ) {}

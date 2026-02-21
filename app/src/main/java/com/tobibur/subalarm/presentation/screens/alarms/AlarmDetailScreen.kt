@@ -97,7 +97,12 @@ fun AlarmDetailScreen(
                 viewModel.onTitleChanged(it)
             }
         }
-        item { RepeatAlarmLayout() }
+        item {
+            RepeatAlarmLayout(
+                repeatDays = alarm.repeatDays,
+                onRepeatDaysChanged = { viewModel.onRepeatDaysChanged(it) }
+            )
+        }
         item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -205,11 +210,18 @@ fun AlarmTitleField(title: String = "", onTitleChanged: (String) -> Unit) {
 }
 
 @Composable
-fun RepeatAlarmLayout() {
-    var isRepeatEnabled by remember { mutableStateOf(true) }
+fun RepeatAlarmLayout(repeatDays: Int, onRepeatDaysChanged: (Int) -> Unit) {
     val days = listOf("M", "T", "W", "T", "F", "S", "S")
     val todayIndex = (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + 5) % 7
-    var selectedDays by remember { mutableStateOf(setOf(todayIndex)) }
+    var isRepeatEnabled by remember(repeatDays) { mutableStateOf(repeatDays != 0) }
+
+    var selectedDays by remember(repeatDays) {
+        mutableStateOf((0..6).filter { repeatDays and (1 shl it) != 0 }.toSet())
+    }
+
+
+    Log.d("TAG", "RepeatAlarmLayout: repeat days: $repeatDays, repeat enabled: $isRepeatEnabled")
+
 
     Column {
 
@@ -228,7 +240,13 @@ fun RepeatAlarmLayout() {
                 checked = isRepeatEnabled,
                 onCheckedChange = {
                     isRepeatEnabled = it
-                    if (!it) selectedDays = emptySet()
+                    if (!it) {
+                        selectedDays = emptySet()
+                        onRepeatDaysChanged(0)
+                    } else {
+                        selectedDays = setOf(todayIndex)
+                        onRepeatDaysChanged(1 shl todayIndex)
+                    }
                 }
             )
         }
@@ -269,6 +287,8 @@ fun RepeatAlarmLayout() {
                             } else {
                                 selectedDays + index
                             }
+                            val encoded = selectedDays.fold(0) { acc, i -> acc or (1 shl i) }
+                            onRepeatDaysChanged(encoded)
                         },
                     contentAlignment = Alignment.Center
                 ) {

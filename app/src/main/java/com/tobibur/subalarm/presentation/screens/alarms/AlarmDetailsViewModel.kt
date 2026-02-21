@@ -54,6 +54,7 @@ class AlarmDetailsViewModel @Inject constructor(
                         it.copy(
                             title = editAlarm.title,
                             time = editAlarm.time,
+                            repeatDays = editAlarm.repeatDays,
                             subAlarms = editAlarm.subAlarms
                         )
                     }
