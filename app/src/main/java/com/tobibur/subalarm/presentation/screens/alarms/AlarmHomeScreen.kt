@@ -1,5 +1,9 @@
 package com.tobibur.subalarm.presentation.screens.alarms
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,42 +47,43 @@ fun AlarmHomeContent(
     onAlarmClick: (Long) -> Unit,
     onToggleAlarm: (Long, Boolean) -> Unit
 ) {
-    if (alarms.isEmpty()) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Icon(
-                    imageVector = Icons.Default.AlarmAdd,
-                    contentDescription = "No alarms",
-                    modifier = Modifier.size(80.dp),
-                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "No alarms set,\n Please create an alarm",
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                )
+    AnimatedContent(
+        targetState = alarms.isEmpty(),
+        transitionSpec = { fadeIn() togetherWith fadeOut() },
+        label = "alarm_list_transition"
+    ) { isEmpty ->
+        if (isEmpty) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Icon(
+                        imageVector = Icons.Default.AlarmAdd,
+                        contentDescription = "No alarms",
+                        modifier = Modifier.size(80.dp),
+                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "No alarms set,\n Please create an alarm",
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    )
+                }
             }
-
-        }
-    } else {
-
-        LazyColumn(
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            items(alarms, key = {
-                it.id
-            }) { alarm ->
-                AlarmItemCard(
-                    modifier = Modifier,
-                    alarm,
-                    onSwitchChange = { isActive ->
-                        onToggleAlarm(alarm.id, isActive)
+        } else {
+            LazyColumn(
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                items(alarms, key = { it.id }) { alarm ->
+                    AlarmItemCard(
+                        modifier = Modifier.animateItem(),
+                        alarm,
+                        onSwitchChange = { isActive ->
+                            onToggleAlarm(alarm.id, isActive)
+                        }
+                    ) {
+                        onAlarmClick(alarm.id)
                     }
-                ) {
-                    // On card click, navigate to view alarm screen
-                    onAlarmClick(alarm.id)
                 }
             }
         }

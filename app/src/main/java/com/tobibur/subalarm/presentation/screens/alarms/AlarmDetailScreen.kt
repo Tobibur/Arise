@@ -124,7 +124,7 @@ fun AlarmDetailScreen(
         }
         items(items = alarm.subAlarms, key = { it.uuid }) { subAlarm ->
             SubAlarmItemCard(
-                modifier = Modifier,
+                modifier = Modifier.animateItem(),
                 title = subAlarm.title,
                 time = formatSubAlarmTime(alarm.time, subAlarm.time),
                 isActive = subAlarm.isActive,

@@ -1,6 +1,11 @@
 package com.tobibur.subalarm.presentation.components
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,7 +40,6 @@ import androidx.compose.ui.unit.dp
 import com.tobibur.subalarm.domain.model.Alarm
 import com.tobibur.subalarm.presentation.utils.formatSubAlarmTime
 import com.tobibur.subalarm.presentation.utils.formatTime
-import kotlinx.coroutines.NonCancellable.isActive
 
 @Composable
 fun AlarmItemCard(
@@ -46,9 +50,19 @@ fun AlarmItemCard(
 ) {
     var expanded by remember { mutableStateOf(false) }
     val (time, amPm) = formatTime(alarm.time)
+    val cardColor by animateColorAsState(
+        targetValue = if (alarm.isActive) MaterialTheme.colorScheme.surfaceVariant
+        else MaterialTheme.colorScheme.surface,
+        label = "card_color"
+    )
+    val timeTextColor by animateColorAsState(
+        targetValue = if (alarm.isActive) MaterialTheme.colorScheme.onSurface
+        else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
+        label = "time_text_color"
+    )
     Card(
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+            containerColor = cardColor,
         ),
         modifier = modifier,
         onClick = onClick
@@ -68,14 +82,16 @@ fun AlarmItemCard(
                         text = time,
                         modifier = Modifier.alignByBaseline(),
                         textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.displaySmall
+                        style = MaterialTheme.typography.displaySmall,
+                        color = timeTextColor
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = amPm,
                         modifier = Modifier.alignByBaseline(),
                         textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.bodyLarge
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = timeTextColor
                     )
                 }
                 SwitchWithIcon(
@@ -126,17 +142,26 @@ fun AlarmItemCard(
                         onClick = { expanded = !expanded },
                         modifier = Modifier.size(24.dp)
                     ) {
-                        Icon(
-                            imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                            contentDescription = if (expanded) "Collapse sub alarms" else "Expand sub alarms"
-                        )
+                        AnimatedContent(
+                            targetState = expanded,
+                            transitionSpec = { fadeIn() togetherWith fadeOut() },
+                            label = "expand_icon"
+                        ) { isExpanded ->
+                            Icon(
+                                imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                                contentDescription = if (isExpanded) "Collapse sub alarms" else "Expand sub alarms"
+                            )
+                        }
                     }
                 }
             }
 
             AnimatedVisibility(visible = expanded) {
                 Column {
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                    HorizontalDivider(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+                    )
                     alarm.subAlarms.forEach { subAlarm ->
                         val formattedTime = formatSubAlarmTime(alarm.time, subAlarm.time)
                         SubAlarmItemCard(
