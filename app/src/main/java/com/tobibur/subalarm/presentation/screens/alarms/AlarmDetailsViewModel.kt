@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,10 +35,6 @@ class AlarmDetailsViewModel @Inject constructor(
         )
     )
     val alarmUIState: StateFlow<Alarm> = _alarmUIState
-
-    private val _subAlarms = MutableStateFlow(emptyList<SubAlarm>())
-    val subAlarms: StateFlow<List<SubAlarm>> = _subAlarms
-
 
     init {
         if (isEditMode) {
@@ -71,7 +68,7 @@ class AlarmDetailsViewModel @Inject constructor(
         }
     }
 
-    fun onTitleChanged(newTitle: String){
+    fun onTitleChanged(newTitle: String) {
         _alarmUIState.update {
             it.copy(
                 title = newTitle
@@ -79,22 +76,32 @@ class AlarmDetailsViewModel @Inject constructor(
         }
     }
 
-   fun onRepeatDaysChanged(repeatDays: Int) {
-       _alarmUIState.update {
-           it.copy(
-               repeatDays = repeatDays
-           )
-       }
-   }
-
-    fun onSubAlarmAdded(){
+    fun onRepeatDaysChanged(repeatDays: Int) {
         _alarmUIState.update {
             it.copy(
-                subAlarms = _subAlarms.value
+                repeatDays = repeatDays
             )
         }
     }
 
+    fun onAddSubAlarmItem(title: String, time: Long) {
+        _alarmUIState.update {
+            it.copy(
+                subAlarms = it.subAlarms + SubAlarm(
+                    id = 0,
+                    uuid = UUID.randomUUID().toString(),
+                    title = title,
+                    time = time
+                )
+            )
+        }
+    }
+
+    fun onRemoveSubAlarmItem(uuid: String) {
+        _alarmUIState.update {
+            it.copy(subAlarms = it.subAlarms.filter { subAlarm -> subAlarm.uuid != uuid })
+        }
+    }
 
     fun saveAlarm() {
         viewModelScope.launch {

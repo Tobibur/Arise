@@ -26,9 +26,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tobibur.subalarm.domain.model.Alarm
 import com.tobibur.subalarm.presentation.components.AlarmItemCard
 import com.tobibur.subalarm.ui.theme.SubAlarmTheme
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @Composable
 fun AlarmHomeScreen(onAlarmClick: (Long) -> Unit, viewModel: AlarmHomeViewModel = hiltViewModel()) {
@@ -73,15 +70,9 @@ fun AlarmHomeContent(
             items(alarms, key = {
                 it.id
             }) { alarm ->
-                val (time, amPm) = formatTime(alarm.time)
                 AlarmItemCard(
                     modifier = Modifier,
-                    title = alarm.title,
-                    time = time,
-                    amOrPm = amPm,
-                    subAlarmCount = alarm.subAlarms.size,
-                    repeatDays = alarm.repeatDays,
-                    isActive = alarm.isActive,
+                    alarm,
                     onSwitchChange = { isActive ->
                         onToggleAlarm(alarm.id, isActive)
                     }
@@ -92,14 +83,6 @@ fun AlarmHomeContent(
             }
         }
     }
-}
-
-
-fun formatTime(time: Long): Pair<String, String> {
-    val date = Date(time)
-    val timePart = SimpleDateFormat("hh:mm", Locale.getDefault()).format(date)
-    val amPm = SimpleDateFormat("a", Locale.getDefault()).format(date)
-    return Pair(timePart, amPm)
 }
 
 @Preview(showBackground = true)

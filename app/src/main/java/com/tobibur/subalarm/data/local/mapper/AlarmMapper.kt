@@ -17,7 +17,7 @@ fun AlarmWithSubAlarms.toDomain(): Alarm = Alarm(
 )
 
 fun SubAlarmEntity.toDomain(): SubAlarm = SubAlarm(
-    id = id, title = title, time = time, isActive = isActive
+    id = id, uuid = id.toString(), title = title, time = time, isActive = isActive
 )
 
 // Domain → Entity
