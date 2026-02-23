@@ -1,9 +1,15 @@
 package com.tobibur.subalarm.presentation.navigation
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -12,10 +18,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -24,8 +32,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.tobibur.subalarm.presentation.components.BottomNavBar
-import com.tobibur.subalarm.presentation.screens.home.AlarmDetailScreen
-import com.tobibur.subalarm.presentation.screens.home.AlarmHomeScreen
+import com.tobibur.subalarm.presentation.screens.alarms.AlarmDetailScreen
+import com.tobibur.subalarm.presentation.screens.alarms.AlarmHomeScreen
 import com.tobibur.subalarm.presentation.screens.settings.SettingsScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,12 +48,13 @@ fun AppNavHost() {
 
     val canGoBack =
         currentRoute !in mainTabs && navController.previousBackStackEntry != null
+    var onDoneClick by remember { mutableStateOf<(() -> Unit)?>(null) }
 
     Scaffold(
         topBar = {
             if (currentRoute == NavScreen.AlarmDetails.route) {
-                val alarmId = navBackStackEntry?.arguments?.getInt("alarmId") ?: 0
-                val title = if (alarmId == 0) "Add New Alarm" else "Edit Alarm"
+                val alarmId = navBackStackEntry?.arguments?.getLong("alarmId") ?: 0L
+                val title = if (alarmId == 0L) "Add New Alarm" else "Edit Alarm"
                 CenterAlignedTopAppBar(
                     title = { Text(text = title, style = MaterialTheme.typography.titleMedium) },
                     navigationIcon = {
@@ -54,7 +63,10 @@ fun AppNavHost() {
                         }
                     },
                     actions = {
-                        TextButton(onClick = { /* TODO: save alarm */ }) {
+                        TextButton(onClick = {
+                            onDoneClick?.invoke()
+                            navController.navigateUp()
+                        }) {
                             Text(
                                 text = "Done",
                                 color = MaterialTheme.colorScheme.primary
@@ -88,12 +100,14 @@ fun AppNavHost() {
             }
         },
         floatingActionButton = {
-            if (currentRoute == NavScreen.Home.route) {
+            AnimatedVisibility(
+                visible = currentRoute == NavScreen.Home.route,
+                enter = scaleIn(),
+                exit = scaleOut()
+            ) {
                 FloatingActionButton(onClick = {
                     navController.navigate(
-                        NavScreen.AlarmDetails.createRoute(
-                            0
-                        )
+                        NavScreen.AlarmDetails.createRoute(0L)
                     )
                 }) {
                     Icon(Icons.Default.Add, contentDescription = "Add Alarm")
@@ -125,7 +139,11 @@ fun AppNavHost() {
         NavHost(
             navController = navController,
             startDestination = NavScreen.Home.route,
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.padding(innerPadding),
+            enterTransition = { slideInHorizontally(initialOffsetX = { it }) },
+            exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) },
+            popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
+            popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
         ) {
             composable(NavScreen.Home.route) {
                 AlarmHomeScreen(onAlarmClick = { alarmId ->
@@ -134,10 +152,9 @@ fun AppNavHost() {
             }
             composable(
                 route = NavScreen.AlarmDetails.route,
-                arguments = listOf(navArgument("alarmId") { type = NavType.IntType })
+                arguments = listOf(navArgument("alarmId") { type = NavType.LongType })
             ) {
-                val alarmId = it.arguments?.getInt("alarmId") ?: 0
-                AlarmDetailScreen(alarmId)
+                AlarmDetailScreen(onDone = { callback -> onDoneClick = callback })
             }
             composable(NavScreen.Analytics.route) {
 
