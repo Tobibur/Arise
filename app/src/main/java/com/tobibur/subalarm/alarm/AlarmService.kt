@@ -24,9 +24,8 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.jvm.java
 
-class AlarmService: Service() {
+class AlarmService : Service() {
 
     companion object {
         private const val TAG = "AlarmService"
@@ -54,7 +53,7 @@ class AlarmService: Service() {
 
         val notification = buildNotification(alarmId, subAlarmId, title, time, isSubAlarm)
         try {
-            startForeground(alarmId.toInt().coerceAtLeast(1), notification)
+            startForeground(RequestCodeGenerator.forNotification(alarmId), notification)
         } catch (e: Exception) {
             Log.e(TAG, "startForeground failed", e)
         }
@@ -84,7 +83,7 @@ class AlarmService: Service() {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_USER_ACTION
         }
         val fullScreenPendingIntent = PendingIntent.getActivity(
-            this, alarmId.toInt(), fullScreenIntent,
+            this, RequestCodeGenerator.forMainAlarm(alarmId), fullScreenIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
@@ -94,7 +93,7 @@ class AlarmService: Service() {
             putExtra(AlarmConstants.EXTRA_ALARM_ID, alarmId)
         }
         val dismissPendingIntent = PendingIntent.getBroadcast(
-            this, alarmId.toInt() + 1_000_000, dismissIntent,
+            this, RequestCodeGenerator.forDismiss(alarmId), dismissIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
@@ -106,7 +105,7 @@ class AlarmService: Service() {
             putExtra(AlarmConstants.EXTRA_ALARM_TIME, time)
         }
         val snoozePendingIntent = PendingIntent.getBroadcast(
-            this, alarmId.toInt() + 2_000_000, snoozeIntent,
+            this, RequestCodeGenerator.forSnooze(alarmId), snoozeIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 

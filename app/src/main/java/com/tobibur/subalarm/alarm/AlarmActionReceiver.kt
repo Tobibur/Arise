@@ -18,7 +18,9 @@ class AlarmActionReceiver : BroadcastReceiver() {
         context.stopService(Intent(context, AlarmService::class.java))
 
         when (intent.action) {
-            ACTION_DISMISS -> { /* Service stopped, nothing else needed */ }
+            ACTION_DISMISS -> { /* Service stopped, nothing else needed */
+            }
+
             ACTION_SNOOZE -> {
                 val alarmId = intent.getLongExtra(AlarmConstants.EXTRA_ALARM_ID, -1)
                 val title = intent.getStringExtra(AlarmConstants.EXTRA_ALARM_TITLE) ?: "Alarm"
@@ -34,7 +36,7 @@ class AlarmActionReceiver : BroadcastReceiver() {
 
                 val pendingIntent = PendingIntent.getBroadcast(
                     context,
-                    alarmId.toInt() + 3_000_000, // unique code for snooze
+                    RequestCodeGenerator.forSnoozeReschedule(alarmId),
                     snoozeAlarmIntent,
                     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                 )

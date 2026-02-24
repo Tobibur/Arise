@@ -9,6 +9,7 @@ import android.util.Log
 import com.tobibur.subalarm.alarm.AlarmConstants
 import com.tobibur.subalarm.alarm.AlarmReceiver
 import com.tobibur.subalarm.alarm.AlarmTimeCalculator
+import com.tobibur.subalarm.alarm.RequestCodeGenerator
 import com.tobibur.subalarm.domain.model.Alarm
 import com.tobibur.subalarm.domain.scheduler.AlarmScheduler
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -46,7 +47,7 @@ class AlarmSchedulerImpl @Inject constructor(
 
         //Schedule main alarm
         scheduleExact(
-            requestCode = alarm.id.toInt(),
+            requestCode = RequestCodeGenerator.forMainAlarm(alarm.id),
             triggerAtMillis = triggerTime,
             alarmId = alarm.id,
             subAlarmId = -1L,
@@ -62,7 +63,7 @@ class AlarmSchedulerImpl @Inject constructor(
                 mainALarmTriggerTime = triggerTime
             )
             scheduleExact(
-                requestCode = generateSubAlarmRequestCode(alarm.id, subAlarm.id),
+                requestCode = RequestCodeGenerator.forSubAlarm(alarm.id, subAlarm.id),
                 triggerAtMillis = subAlarmTriggerTime,
                 alarmId = alarm.id,
                 subAlarmId = subAlarm.id,
@@ -73,9 +74,9 @@ class AlarmSchedulerImpl @Inject constructor(
     }
 
     override fun cancel(alarm: Alarm) {
-        cancelPendingIntent(alarm.id.toInt())
+        cancelPendingIntent(RequestCodeGenerator.forMainAlarm(alarm.id))
         alarm.subAlarms.filter { it.isActive }.forEach { subAlarm ->
-            cancelPendingIntent(generateSubAlarmRequestCode(alarm.id, subAlarm.id))
+            cancelPendingIntent(RequestCodeGenerator.forSubAlarm(alarm.id, subAlarm.id))
         }
     }
 
@@ -125,11 +126,4 @@ class AlarmSchedulerImpl @Inject constructor(
         pendingIntent?.let { alarmManager.cancel(it) }
     }
 
-    /**
-     * Unique request code for sub-alarms.
-     * Deterministic so we can cancel later.
-     */
-    private fun generateSubAlarmRequestCode(alarmId: Long, subAlarmId: Long): Int {
-        return (alarmId * 10_000 + subAlarmId).toInt()
-    }
 }
