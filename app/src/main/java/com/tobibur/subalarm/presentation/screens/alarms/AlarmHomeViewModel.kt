@@ -23,9 +23,9 @@ class AlarmHomeViewModel @Inject constructor(
             viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
         )
 
-    fun toggleAlarmActive(alarmId: Long, isActive: Boolean) {
+    fun toggleAlarmActive(alarm: Alarm, isActive: Boolean) {
         viewModelScope.launch {
-            toggleAlarmActiveUseCase(alarmId, isActive)
+            toggleAlarmActiveUseCase(alarm, isActive)
         }
     }
 }

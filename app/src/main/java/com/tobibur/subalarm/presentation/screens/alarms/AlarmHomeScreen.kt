@@ -45,7 +45,7 @@ fun AlarmHomeScreen(onAlarmClick: (Long) -> Unit, viewModel: AlarmHomeViewModel 
 fun AlarmHomeContent(
     alarms: List<Alarm>,
     onAlarmClick: (Long) -> Unit,
-    onToggleAlarm: (Long, Boolean) -> Unit
+    onToggleAlarm: (Alarm, Boolean) -> Unit
 ) {
     AnimatedContent(
         targetState = alarms.isEmpty(),
@@ -79,7 +79,7 @@ fun AlarmHomeContent(
                         modifier = Modifier.animateItem(),
                         alarm,
                         onSwitchChange = { isActive ->
-                            onToggleAlarm(alarm.id, isActive)
+                            onToggleAlarm(alarm, isActive)
                         }
                     ) {
                         onAlarmClick(alarm.id)
