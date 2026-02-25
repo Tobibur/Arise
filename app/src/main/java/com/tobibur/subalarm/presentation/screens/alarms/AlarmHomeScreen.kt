@@ -37,7 +37,8 @@ fun AlarmHomeScreen(onAlarmClick: (Long) -> Unit, viewModel: AlarmHomeViewModel 
     AlarmHomeContent(
         alarms = alarms.value,
         onAlarmClick = onAlarmClick,
-        onToggleAlarm = viewModel::toggleAlarmActive
+        onToggleAlarm = viewModel::toggleAlarmActive,
+        onDeleteAlarm = viewModel::deleteAlarm
     )
 }
 
@@ -45,7 +46,8 @@ fun AlarmHomeScreen(onAlarmClick: (Long) -> Unit, viewModel: AlarmHomeViewModel 
 fun AlarmHomeContent(
     alarms: List<Alarm>,
     onAlarmClick: (Long) -> Unit,
-    onToggleAlarm: (Long, Boolean) -> Unit
+    onToggleAlarm: (Alarm, Boolean) -> Unit,
+    onDeleteAlarm: (Long) -> Unit,
 ) {
     AnimatedContent(
         targetState = alarms.isEmpty(),
@@ -79,10 +81,13 @@ fun AlarmHomeContent(
                         modifier = Modifier.animateItem(),
                         alarm,
                         onSwitchChange = { isActive ->
-                            onToggleAlarm(alarm.id, isActive)
+                            onToggleAlarm(alarm, isActive)
+                        },
+                        onClick = {
+                            onAlarmClick(alarm.id)
                         }
                     ) {
-                        onAlarmClick(alarm.id)
+                        onDeleteAlarm(alarm.id)
                     }
                 }
             }
@@ -98,7 +103,9 @@ fun HomeScreenEmptyPreview() {
             alarms = emptyList(),
             onAlarmClick = {},
             onToggleAlarm = { _, _ -> }
-        )
+        ) {
+
+        }
     }
 }
 
@@ -118,6 +125,6 @@ fun HomeHomeScreenPreview() {
             ),
             onAlarmClick = {},
             onToggleAlarm = { _, _ -> }
-        )
+        ) {}
     }
 }
