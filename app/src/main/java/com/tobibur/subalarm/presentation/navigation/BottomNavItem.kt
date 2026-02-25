@@ -13,7 +13,7 @@ sealed class BottomNavItem(
 ) {
     object Home : BottomNavItem(NavScreen.Home.route, Icons.Default.Alarm, "Alarm")
     object Analytics :
-        BottomNavItem(NavScreen.Analytics.route, Icons.Default.DateRange, "Analytics")
+        BottomNavItem(NavScreen.Reminder.route, Icons.Default.DateRange, "Reminder")
 
     object Settings : BottomNavItem(NavScreen.Settings.route, Icons.Default.Settings, "Settings")
 

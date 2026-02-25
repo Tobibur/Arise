@@ -34,6 +34,7 @@ import androidx.navigation.navArgument
 import com.tobibur.subalarm.presentation.components.BottomNavBar
 import com.tobibur.subalarm.presentation.screens.alarms.AlarmDetailScreen
 import com.tobibur.subalarm.presentation.screens.alarms.AlarmHomeScreen
+import com.tobibur.subalarm.presentation.screens.reminders.ReminderScreen
 import com.tobibur.subalarm.presentation.screens.settings.SettingsScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,7 +45,7 @@ fun AppNavHost() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route ?: NavScreen.Home.route
 
-    val mainTabs = listOf(NavScreen.Home.route, NavScreen.Analytics.route, NavScreen.Settings.route)
+    val mainTabs = listOf(NavScreen.Home.route, NavScreen.Reminder.route, NavScreen.Settings.route)
 
     val canGoBack =
         currentRoute !in mainTabs && navController.previousBackStackEntry != null
@@ -80,7 +81,7 @@ fun AppNavHost() {
                         Text(
                             text = when (currentRoute) {
                                 NavScreen.Home.route -> "SubAlarm"
-                                NavScreen.Analytics.route -> "Analytics"
+                                NavScreen.Reminder.route -> "Reminder"
                                 NavScreen.Settings.route -> "Settings"
                                 else -> "SubAlarm"
                             }
@@ -117,7 +118,7 @@ fun AppNavHost() {
         bottomBar = {
             if (currentRoute in listOf(
                     NavScreen.Home.route,
-                    NavScreen.Analytics.route,
+                    NavScreen.Reminder.route,
                     NavScreen.Settings.route
                 )
             ) {
@@ -156,8 +157,8 @@ fun AppNavHost() {
             ) {
                 AlarmDetailScreen(onDone = { callback -> onDoneClick = callback })
             }
-            composable(NavScreen.Analytics.route) {
-
+            composable(NavScreen.Reminder.route) {
+                ReminderScreen()
             }
             composable(NavScreen.Settings.route) {
                 SettingsScreen()

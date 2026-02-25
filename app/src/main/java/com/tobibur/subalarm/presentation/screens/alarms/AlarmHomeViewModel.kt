@@ -3,6 +3,7 @@ package com.tobibur.subalarm.presentation.screens.alarms
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tobibur.subalarm.domain.model.Alarm
+import com.tobibur.subalarm.domain.usecase.DeleteAlarmUseCase
 import com.tobibur.subalarm.domain.usecase.GetAllAlarmsUseCase
 import com.tobibur.subalarm.domain.usecase.ToggleAlarmActiveUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +16,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AlarmHomeViewModel @Inject constructor(
     private val getAllAlarmsUseCase: GetAllAlarmsUseCase,
-    private val toggleAlarmActiveUseCase: ToggleAlarmActiveUseCase
+    private val toggleAlarmActiveUseCase: ToggleAlarmActiveUseCase,
+    private val deleteAlarmUseCase: DeleteAlarmUseCase
 ) : ViewModel() {
 
     val alarms: StateFlow<List<Alarm>> =
@@ -26,6 +28,12 @@ class AlarmHomeViewModel @Inject constructor(
     fun toggleAlarmActive(alarm: Alarm, isActive: Boolean) {
         viewModelScope.launch {
             toggleAlarmActiveUseCase(alarm, isActive)
+        }
+    }
+
+    fun deleteAlarm(alarmId: Long) {
+        viewModelScope.launch {
+            deleteAlarmUseCase(alarmId)
         }
     }
 }
