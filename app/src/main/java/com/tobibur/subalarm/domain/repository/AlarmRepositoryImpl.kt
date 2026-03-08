@@ -19,7 +19,7 @@ class AlarmRepositoryImpl @Inject constructor(
     }
 
     override fun getAlarmById(alarmId: Long): Flow<Alarm?> {
-        return alarmDao.getAlarmWithSubAlarms(alarmId).map { it.toDomain() }
+        return alarmDao.getAlarmWithSubAlarms(alarmId).map { it?.toDomain() }
     }
 
     override suspend fun insertAlarm(alarm: Alarm): Long {

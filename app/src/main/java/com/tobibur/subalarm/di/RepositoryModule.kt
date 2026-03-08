@@ -2,6 +2,8 @@ package com.tobibur.subalarm.di
 
 import com.tobibur.subalarm.domain.repository.AlarmRepository
 import com.tobibur.subalarm.domain.repository.AlarmRepositoryImpl
+import com.tobibur.subalarm.domain.repository.ReminderRepository
+import com.tobibur.subalarm.domain.repository.ReminderRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -13,5 +15,8 @@ abstract class RepositoryModule {
 
     @Binds
     abstract fun bindAlarmRepository(alarmRepositoryImpl: AlarmRepositoryImpl): AlarmRepository
+
+    @Binds
+    abstract fun bindReminderRepository(reminderRepositoryImpl: ReminderRepositoryImpl): ReminderRepository
 
 }

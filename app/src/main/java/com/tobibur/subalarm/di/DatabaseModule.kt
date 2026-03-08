@@ -24,4 +24,9 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun providesAlarmDao(database: SubAlarmDatabase) = database.alarmDao()
+
+    @Provides
+    @Singleton
+    fun providesReminderDao(database: SubAlarmDatabase) = database.reminderDao()
+
 }

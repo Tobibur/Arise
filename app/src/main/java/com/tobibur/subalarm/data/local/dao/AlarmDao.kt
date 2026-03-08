@@ -48,7 +48,7 @@ interface AlarmDao {
 
     @Transaction
     @Query("SELECT * FROM alarms WHERE id = :alarmId")
-    fun getAlarmWithSubAlarms(alarmId: Long): Flow<AlarmWithSubAlarms>
+    fun getAlarmWithSubAlarms(alarmId: Long): Flow<AlarmWithSubAlarms?>
 
     @Query("UPDATE alarms SET isActive = :isActive WHERE id = :alarmId")
     suspend fun updateAlarmActive(isActive: Boolean, alarmId: Long)
