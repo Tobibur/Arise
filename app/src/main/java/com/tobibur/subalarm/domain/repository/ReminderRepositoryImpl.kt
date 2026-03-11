@@ -23,15 +23,11 @@ class ReminderRepositoryImpl @Inject constructor(
         return reminderDao.insert(reminder.toEntity())
     }
 
-    override suspend fun update(reminder: Reminder) {
-        return reminderDao.update(reminder.toEntity())
-    }
-
     override suspend fun deleteById(id: Long) {
-        return reminderDao.deleteById(id)
+        reminderDao.deleteById(id)
     }
 
     override suspend fun toggleCompleted(id: Long, completed: Boolean) {
-        return reminderDao.updateCompleted(id, completed)
+        reminderDao.updateCompleted(id, completed)
     }
 }

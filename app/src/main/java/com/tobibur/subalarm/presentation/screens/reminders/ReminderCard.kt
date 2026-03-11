@@ -22,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,8 +42,8 @@ internal fun ReminderCard(
     onClick: (Reminder) -> Unit,
     onToggleCompleted: (Reminder) -> Unit
 ) {
-    val timeFormatted = SimpleDateFormat("hh:mm a", Locale.getDefault())
-        .format(Date(reminder.dateTimeMillis))
+    val timeFormat = remember { SimpleDateFormat("hh:mm a", Locale.getDefault()) }
+    val timeFormatted = timeFormat.format(Date(reminder.dateTimeMillis))
 
     Card(
         modifier = Modifier

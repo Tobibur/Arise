@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.CalendarToday
@@ -28,7 +29,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -45,6 +46,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
@@ -145,14 +147,45 @@ internal fun AddReminderBottomSheet(
 
             Spacer(Modifier.height(16.dp))
 
-            OutlinedTextField(
+            Text(
+                text = "TITLE",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            )
+            Spacer(Modifier.height(8.dp))
+
+            BasicTextField(
                 value = title,
                 onValueChange = { title = it },
-                label = { Text("Title") },
+                textStyle = MaterialTheme.typography.titleMedium.copy(
+                    color = MaterialTheme.colorScheme.onSurface
+                ),
+                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                 singleLine = true,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .focusRequester(titleFocusRequester)
+                    .focusRequester(titleFocusRequester),
+                decorationBox = { innerTextField ->
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(
+                                color = MaterialTheme.colorScheme.surfaceVariant,
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .padding(horizontal = 20.dp, vertical = 18.dp)
+                    ) {
+                        if (title.isEmpty()) {
+                            Text(
+                                text = "e.g. Call John",
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                                )
+                            )
+                        }
+                        innerTextField()
+                    }
+                }
             )
 
             LaunchedEffect(Unit) {
@@ -161,13 +194,44 @@ internal fun AddReminderBottomSheet(
 
             Spacer(Modifier.height(12.dp))
 
-            OutlinedTextField(
+            Text(
+                text = "DESCRIPTION",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            )
+            Spacer(Modifier.height(8.dp))
+
+            BasicTextField(
                 value = description,
                 onValueChange = { description = it },
-                label = { Text("Description (optional)") },
+                textStyle = MaterialTheme.typography.titleMedium.copy(
+                    color = MaterialTheme.colorScheme.onSurface
+                ),
+                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                 singleLine = false,
                 maxLines = 3,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                decorationBox = { innerTextField ->
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(
+                                color = MaterialTheme.colorScheme.surfaceVariant,
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .padding(horizontal = 20.dp, vertical = 18.dp)
+                    ) {
+                        if (description.isEmpty()) {
+                            Text(
+                                text = "e.g. Discuss about the presentation",
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                                )
+                            )
+                        }
+                        innerTextField()
+                    }
+                }
             )
 
             Spacer(Modifier.height(16.dp))
@@ -228,8 +292,8 @@ private fun DateTimeSelector(
     onDateClick: () -> Unit,
     onTimeClick: () -> Unit
 ) {
-    val dateFormatted = SimpleDateFormat("EEE, MMM d, yyyy", Locale.getDefault())
-        .format(Date(dateMillis))
+    val dateFormat = remember { SimpleDateFormat("EEE, MMM d, yyyy", Locale.getDefault()) }
+    val dateFormatted = dateFormat.format(Date(dateMillis))
     val timeFormatted = formatTime12(hour, minute)
 
     Row(
@@ -325,17 +389,17 @@ private data class RepeatOption(val label: String, val daysBitmask: Int)
 
 private fun buildRepeatOptions(selectedDateMillis: Long): List<RepeatOption> {
     val cal = Calendar.getInstance().apply { timeInMillis = selectedDateMillis }
-    val dayOfWeek = cal.get(Calendar.DAY_OF_WEEK) // Calendar.SUNDAY=1 .. SATURDAY=7
-    // Map Calendar day to bitmask index (Sun=0, Mon=1, ..., Sat=6)
-    val bitIndex = dayOfWeek - Calendar.SUNDAY
+    val dayOfWeek = cal.get(Calendar.DAY_OF_WEEK)
+    // Map Calendar day to app bitmask index (Mon=0, Tue=1, ..., Sun=6)
+    val bitIndex = (dayOfWeek + 5) % 7
     val dayName = SimpleDateFormat("EEE", Locale.getDefault()).format(cal.time)
 
     return listOf(
         RepeatOption("None", 0),
         RepeatOption("Every day", 0b1111111),
         RepeatOption("Every week on $dayName", 1 shl bitIndex),
-        RepeatOption("Every weekday (Mon - Fri)", 0b0111110),
-        RepeatOption("Every weekend (Sat - Sun)", 0b1000001),
+        RepeatOption("Every weekday (Mon - Fri)", 0b0011111),
+        RepeatOption("Every weekend (Sat - Sun)", 0b1100000),
     )
 }
 
