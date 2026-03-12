@@ -17,7 +17,7 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun providesDatabase(@ApplicationContext context: Context): AriseDatabase {
-        return Room.databaseBuilder(context, AriseDatabase::class.java, "sub_alarm_db")
+        return Room.databaseBuilder(context, AriseDatabase::class.java, AriseDatabase.DB_NAME)
             .build()
     }
 

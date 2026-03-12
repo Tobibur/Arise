@@ -6,6 +6,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
 import com.tobibur.arise.alarm.AlarmConstants
+import com.tobibur.arise.reminder.ReminderConstants
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
@@ -21,7 +22,7 @@ class AriseApplication : Application() {
     private fun createReminderNotificationChannel() {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
-                "reminder_channel",
+                ReminderConstants.REMINDER_CHANNEL_ID,
                 "Reminders",
                 NotificationManager.IMPORTANCE_HIGH
             ).apply {

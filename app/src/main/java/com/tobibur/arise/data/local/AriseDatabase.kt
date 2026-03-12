@@ -17,4 +17,8 @@ abstract class AriseDatabase : RoomDatabase() {
     abstract fun alarmDao(): AlarmDao
 
     abstract fun reminderDao(): ReminderDao
+
+    companion object {
+        const val DB_NAME = "arise_db"
+    }
 }
