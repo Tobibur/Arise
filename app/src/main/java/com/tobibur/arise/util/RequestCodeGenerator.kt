@@ -1,4 +1,4 @@
-package com.tobibur.arise.alarm
+package com.tobibur.arise.util
 
 object RequestCodeGenerator {
     private const val TYPE_MAIN_ALARM = 1
@@ -7,7 +7,9 @@ object RequestCodeGenerator {
     private const val TYPE_SNOOZE = 4
     private const val TYPE_SNOOZE_RESCHEDULE = 5
     private const val TYPE_NOTIFICATION = 6
+    private const val TYPE_REMINDER = 7
 
+    fun forReminder(reminderId: Long): Int = hash(reminderId, 0L, TYPE_REMINDER)
     fun forMainAlarm(alarmId: Long): Int = hash(alarmId, 0L, TYPE_MAIN_ALARM)
     fun forSubAlarm(alarmId: Long, subAlarmId: Long): Int = hash(alarmId, subAlarmId, TYPE_SUB_ALARM)
     fun forDismiss(alarmId: Long): Int = hash(alarmId, 0L, TYPE_DISMISS)

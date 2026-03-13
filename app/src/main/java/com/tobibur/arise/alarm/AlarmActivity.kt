@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tobibur.arise.ui.theme.AriseTheme
+import com.tobibur.arise.util.AlarmConstants
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -37,7 +38,6 @@ class AlarmActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        acquireScreenWakeLock()
         setupLockScreenFlags()
 
         val alarmId = intent.getLongExtra(AlarmConstants.EXTRA_ALARM_ID, -1)
@@ -81,8 +81,13 @@ class AlarmActivity : ComponentActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onResume() {
+        super.onResume()
+        acquireScreenWakeLock()
+    }
+
+    override fun onPause() {
+        super.onPause()
         if (wakeLock?.isHeld == true) wakeLock?.release()
     }
 

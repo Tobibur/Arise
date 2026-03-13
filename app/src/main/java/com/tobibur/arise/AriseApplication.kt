@@ -5,8 +5,8 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
-import com.tobibur.arise.alarm.AlarmConstants
-import com.tobibur.arise.reminder.ReminderConstants
+import com.tobibur.arise.util.AlarmConstants
+import com.tobibur.arise.util.ReminderConstants
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp

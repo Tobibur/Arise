@@ -6,10 +6,10 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.util.Log
-import com.tobibur.arise.alarm.AlarmConstants
 import com.tobibur.arise.alarm.AlarmReceiver
-import com.tobibur.arise.alarm.AlarmTimeCalculator
-import com.tobibur.arise.alarm.RequestCodeGenerator
+import com.tobibur.arise.domain.usecase.AlarmTimeCalculator
+import com.tobibur.arise.util.AlarmConstants
+import com.tobibur.arise.util.RequestCodeGenerator
 import com.tobibur.arise.domain.model.Alarm
 import com.tobibur.arise.domain.scheduler.AlarmScheduler
 import dagger.hilt.android.qualifiers.ApplicationContext

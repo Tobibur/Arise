@@ -1,4 +1,4 @@
-package com.tobibur.arise.alarm
+package com.tobibur.arise.util
 
 object AlarmConstants {
     const val ALARM_CHANNEL_ID = "alarm_channel"

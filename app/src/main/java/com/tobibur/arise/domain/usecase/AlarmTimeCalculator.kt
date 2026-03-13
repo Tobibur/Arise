@@ -1,4 +1,4 @@
-package com.tobibur.arise.alarm
+package com.tobibur.arise.domain.usecase
 
 import java.util.Calendar
 
