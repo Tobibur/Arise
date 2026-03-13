@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "SubAlarm"
+rootProject.name = "Arise"
 include(":app")
  

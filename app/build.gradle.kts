@@ -9,13 +9,13 @@ plugins {
 }
 
 android {
-    namespace = "com.tobibur.subalarm"
+    namespace = "com.tobibur.arise"
     compileSdk {
         version = release(36)
     }
 
     defaultConfig {
-        applicationId = "com.tobibur.subalarm"
+        applicationId = "com.tobibur.arise"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
