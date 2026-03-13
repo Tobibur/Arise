@@ -1,14 +1,25 @@
-# SubAlarm
+# Arise
 
-An Android alarm app with sub-alarms — set multiple reminder notifications before your main alarm fires.
+A modern Android alarm & reminder app — set alarms with sub-alarms, manage reminders, and stay on schedule.
 
 ## Features
 
-- **Sub-Alarms** — Add multiple reminders that fire at custom intervals before the main alarm
+### Alarms
+- **Sub-Alarms** — Add multiple reminder notifications that fire at custom intervals before the main alarm
 - **Repeating Schedules** — Set alarms to repeat on specific days of the week
+- **Alarm Toggle** — Enable or disable alarms without deleting them
 - **Snooze & Dismiss** — Snooze alarms for 5 minutes or dismiss from the lock screen
-- **Boot Persistence** — Alarms are automatically rescheduled after device reboot
 - **Full-Screen Notifications** — Lock screen alarm UI with sound and vibration
+- **Boot Persistence** — Alarms are automatically rescheduled after device reboot
+
+### Reminders
+- **Quick Reminders** — Create reminders with title, description, and date/time
+- **Repeating Reminders** — Set reminders to repeat on specific days
+- **Calendar View** — Week calendar strip with date picker for easy scheduling
+- **Mark as Completed** — Toggle reminder completion status
+
+### Navigation
+- **Bottom Navigation** — Quick access to Alarms, Reminders, and Settings tabs
 
 ## Screenshots
 
@@ -21,6 +32,7 @@ An Android alarm app with sub-alarms — set multiple reminder notifications bef
 - **Architecture**: Clean Architecture (Presentation / Domain / Data)
 - **Database**: Room
 - **DI**: Hilt
+- **Navigation**: Jetpack Navigation Compose
 - **Async**: Kotlin Coroutines & Flow
 
 ## Requirements
@@ -42,8 +54,9 @@ An Android alarm app with sub-alarms — set multiple reminder notifications bef
 ## Architecture
 
 ```
-com.tobibur.subalarm/
-├── alarm/          # Alarm scheduling, receivers, and services
+com.tobibur.arise/
+├── alarm/          # Alarm triggering, receivers, and services
+├── reminder/       # Reminder notification receivers
 ├── data/           # Room database, DAOs, entities, and mappers
 ├── di/             # Hilt dependency injection modules
 ├── domain/         # Models, repository interfaces, and use cases
