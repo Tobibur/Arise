@@ -33,6 +33,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,15 +41,28 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
-fun SettingsScreen() {
+fun SettingsScreen(
+    viewModel: SettingsViewModel = hiltViewModel()
+) {
+
+    val alarms by viewModel.alarms.collectAsStateWithLifecycle()
+    val reminders by viewModel.reminders.collectAsStateWithLifecycle()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-        QuickOverviewSection()
+        QuickOverviewSection(
+            alarmCount = alarms.size,
+            reminderCount = reminders.size,
+            completedCount = reminders.count{ it.isCompleted },
+            upcomingCount = reminders.count { !it.isCompleted && it.dateTimeMillis > System.currentTimeMillis() }
+        )
         HorizontalDivider(
             color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)
         )
@@ -58,7 +72,12 @@ fun SettingsScreen() {
 }
 
 @Composable
-private fun QuickOverviewSection() {
+private fun QuickOverviewSection(
+    alarmCount: Int,
+    reminderCount: Int,
+    completedCount: Int,
+    upcomingCount: Int
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -80,7 +99,7 @@ private fun QuickOverviewSection() {
         ) {
             StatItem(
                 icon = Icons.Default.Alarm,
-                count = "12",
+                count = alarmCount.toString(),
                 label = "ALARMS",
                 modifier = Modifier.weight(1f)
             )
@@ -90,7 +109,7 @@ private fun QuickOverviewSection() {
             )
             StatItem(
                 icon = Icons.Default.DateRange,
-                count = "8",
+                count = reminderCount.toString(),
                 label = "REMINDERS",
                 modifier = Modifier.weight(1f)
             )
@@ -100,7 +119,7 @@ private fun QuickOverviewSection() {
             )
             StatItem(
                 icon = Icons.Default.CheckCircleOutline,
-                count = "15",
+                count = completedCount.toString(),
                 label = "COMPLETED",
                 modifier = Modifier.weight(1f)
             )
@@ -110,7 +129,7 @@ private fun QuickOverviewSection() {
             )
             StatItem(
                 icon = Icons.Default.Schedule,
-                count = "5",
+                count = upcomingCount.toString(),
                 label = "UPCOMING",
                 modifier = Modifier.weight(1f)
             )
