@@ -18,13 +18,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Alarm
 import androidx.compose.material.icons.filled.CheckCircleOutline
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.HorizontalDivider
@@ -38,11 +38,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.tobibur.arise.BuildConfig
+import com.tobibur.arise.R
 
 @Composable
 fun SettingsScreen(
@@ -51,6 +54,8 @@ fun SettingsScreen(
 
     val alarms by viewModel.alarms.collectAsStateWithLifecycle()
     val reminders by viewModel.reminders.collectAsStateWithLifecycle()
+    val completedCount by viewModel.completedRemindersCount.collectAsStateWithLifecycle()
+    val upcomingCount by viewModel.upcomingRemindersCount.collectAsStateWithLifecycle()
 
     Column(
         modifier = Modifier
@@ -60,8 +65,8 @@ fun SettingsScreen(
         QuickOverviewSection(
             alarmCount = alarms.size,
             reminderCount = reminders.size,
-            completedCount = reminders.count{ it.isCompleted },
-            upcomingCount = reminders.count { !it.isCompleted && it.dateTimeMillis > System.currentTimeMillis() }
+            completedCount = completedCount,
+            upcomingCount = upcomingCount
         )
         HorizontalDivider(
             color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)
@@ -85,7 +90,7 @@ private fun QuickOverviewSection(
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         Text(
-            text = "QUICK OVERVIEW",
+            text = stringResource(R.string.settings_quick_overview),
             style = MaterialTheme.typography.labelSmall.copy(
                 fontWeight = FontWeight.Bold,
                 letterSpacing = 0.6.sp
@@ -100,7 +105,7 @@ private fun QuickOverviewSection(
             StatItem(
                 icon = Icons.Default.Alarm,
                 count = alarmCount.toString(),
-                label = "ALARMS",
+                label = stringResource(R.string.settings_alarms),
                 modifier = Modifier.weight(1f)
             )
             VerticalDivider(
@@ -110,7 +115,7 @@ private fun QuickOverviewSection(
             StatItem(
                 icon = Icons.Default.DateRange,
                 count = reminderCount.toString(),
-                label = "REMINDERS",
+                label = stringResource(R.string.settings_reminders),
                 modifier = Modifier.weight(1f)
             )
             VerticalDivider(
@@ -120,7 +125,7 @@ private fun QuickOverviewSection(
             StatItem(
                 icon = Icons.Default.CheckCircleOutline,
                 count = completedCount.toString(),
-                label = "COMPLETED",
+                label = stringResource(R.string.settings_completed),
                 modifier = Modifier.weight(1f)
             )
             VerticalDivider(
@@ -130,7 +135,7 @@ private fun QuickOverviewSection(
             StatItem(
                 icon = Icons.Default.Schedule,
                 count = upcomingCount.toString(),
-                label = "UPCOMING",
+                label = stringResource(R.string.settings_upcoming),
                 modifier = Modifier.weight(1f)
             )
         }
@@ -180,7 +185,7 @@ private fun GeneralSection() {
     ) {
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "GENERAL",
+            text = stringResource(R.string.settings_general),
             style = MaterialTheme.typography.labelMedium.copy(
                 fontWeight = FontWeight.Bold,
                 letterSpacing = 1.4.sp
@@ -190,26 +195,26 @@ private fun GeneralSection() {
         )
         SettingsItem(
             icon = Icons.Default.Notifications,
-            title = "Notifications",
-            subtitle = "Manage alerts and sounds",
+            title = stringResource(R.string.settings_notifications),
+            subtitle = stringResource(R.string.settings_notifications_subtitle),
             onClick = { }
         )
         SettingsItem(
             icon = Icons.Default.Palette,
-            title = "Theme",
-            subtitle = "Light, Dark, and Accents",
+            title = stringResource(R.string.settings_theme),
+            subtitle = stringResource(R.string.settings_theme_subtitle),
             onClick = { }
         )
         SettingsItem(
             icon = Icons.Default.MusicNote,
-            title = "Sound",
-            subtitle = "Volume and ringtones",
+            title = stringResource(R.string.settings_sound),
+            subtitle = stringResource(R.string.settings_sound_subtitle),
             onClick = { }
         )
         SettingsItem(
             icon = Icons.Default.Info,
-            title = "About",
-            subtitle = "Version 2.4.0",
+            title = stringResource(R.string.settings_about),
+            subtitle = stringResource(R.string.settings_about_subtitle, BuildConfig.VERSION_NAME),
             onClick = { }
         )
     }
@@ -276,7 +281,7 @@ private fun LegalSection() {
     ) {
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "LEGAL",
+            text = stringResource(R.string.settings_legal),
             style = MaterialTheme.typography.labelMedium.copy(
                 fontWeight = FontWeight.Bold,
                 letterSpacing = 1.4.sp
@@ -284,8 +289,8 @@ private fun LegalSection() {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp)
         )
-        LegalItem(title = "Privacy Policy", onClick = { })
-        LegalItem(title = "Terms of Service", onClick = { })
+        LegalItem(title = stringResource(R.string.settings_privacy_policy), onClick = { })
+        LegalItem(title = stringResource(R.string.settings_terms_of_service), onClick = { })
     }
 }
 
@@ -311,7 +316,7 @@ private fun LegalItem(
         )
         Icon(
             imageVector = Icons.AutoMirrored.Filled.OpenInNew,
-            contentDescription = "Open",
+            contentDescription = stringResource(R.string.settings_open),
             modifier = Modifier.size(16.dp),
             tint = MaterialTheme.colorScheme.onSurfaceVariant
         )
