@@ -23,7 +23,11 @@ A modern Android alarm & reminder app — set alarms with sub-alarms, manage rem
 
 ## Screenshots
 
-<!-- Add screenshots here -->
+<p align="center">
+  <img src="screenshots/Screenshot_Arise_12.png" alt="Alarms" width="250"/>
+  <img src="screenshots/Screenshot_Arise_13.png" alt="Reminders" width="250"/>
+  <img src="screenshots/Screenshot_Arise_14.png" alt="Settings" width="250"/>
+</p>
 
 ## Tech Stack
 
