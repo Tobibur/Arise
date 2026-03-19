@@ -1,6 +1,7 @@
 package com.tobibur.arise.presentation.screens.reminders
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -134,7 +135,6 @@ internal fun WeekStrip(
                         .get(Calendar.DAY_OF_MONTH)
                     val isSelected = isSameDay(dayMillis, selectedDateMillis)
                     val isToday = isSameDay(dayMillis, todayMillis)
-                    val highlighted = isSelected || isToday
 
                     Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
                         Box(
@@ -142,9 +142,15 @@ internal fun WeekStrip(
                                 .size(36.dp)
                                 .clip(CircleShape)
                                 .then(
-                                    if (highlighted) Modifier.background(
-                                        MaterialTheme.colorScheme.primary, CircleShape
-                                    ) else Modifier
+                                    when {
+                                        isSelected -> Modifier.background(
+                                            MaterialTheme.colorScheme.primary, CircleShape
+                                        )
+                                        isToday -> Modifier.border(
+                                            1.5.dp, MaterialTheme.colorScheme.primary, CircleShape
+                                        )
+                                        else -> Modifier
+                                    }
                                 )
                                 .clickable { onDateSelected(dayMillis) },
                             contentAlignment = Alignment.Center
@@ -152,9 +158,12 @@ internal fun WeekStrip(
                             Text(
                                 text = dayNumber.toString(),
                                 style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = if (highlighted) FontWeight.Bold else FontWeight.Normal,
-                                color = if (highlighted) MaterialTheme.colorScheme.onPrimary
-                                else MaterialTheme.colorScheme.onSurface
+                                fontWeight = if (isSelected || isToday) FontWeight.Bold else FontWeight.Normal,
+                                color = when {
+                                    isSelected -> MaterialTheme.colorScheme.onPrimary
+                                    isToday -> MaterialTheme.colorScheme.primary
+                                    else -> MaterialTheme.colorScheme.onSurface
+                                }
                             )
                         }
                     }
