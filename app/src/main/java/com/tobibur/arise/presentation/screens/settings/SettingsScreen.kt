@@ -54,8 +54,6 @@ fun SettingsScreen(
 
     val alarms by viewModel.alarms.collectAsStateWithLifecycle()
     val reminders by viewModel.reminders.collectAsStateWithLifecycle()
-    val completedCount by viewModel.completedRemindersCount.collectAsStateWithLifecycle()
-    val upcomingCount by viewModel.upcomingRemindersCount.collectAsStateWithLifecycle()
 
     Column(
         modifier = Modifier
@@ -65,8 +63,8 @@ fun SettingsScreen(
         QuickOverviewSection(
             alarmCount = alarms.size,
             reminderCount = reminders.size,
-            completedCount = completedCount,
-            upcomingCount = upcomingCount
+            completedCount = reminders.count{ it.isCompleted },
+            upcomingCount = reminders.count { !it.isCompleted && it.dateTimeMillis > System.currentTimeMillis() }
         )
         HorizontalDivider(
             color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)
