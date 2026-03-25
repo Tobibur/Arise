@@ -1,6 +1,5 @@
 package com.tobibur.arise.alarm
 
-import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -9,28 +8,34 @@ import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.paint
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.tobibur.arise.R
 import com.tobibur.arise.ui.theme.AriseTheme
 import com.tobibur.arise.util.AlarmConstants
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import kotlin.jvm.java
 
 class AlarmActivity : ComponentActivity() {
 
@@ -60,7 +65,7 @@ class AlarmActivity : ComponentActivity() {
 
     @Suppress("DEPRECATION")
     private fun acquireScreenWakeLock() {
-        val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
+        val pm = getSystemService(POWER_SERVICE) as PowerManager
         wakeLock = pm.newWakeLock(
             PowerManager.SCREEN_BRIGHT_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP,
             "SubAlarm:AlarmScreen"
@@ -119,8 +124,17 @@ fun AlarmRingScreen(
     val timeFormatted = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date(time))
 
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+        Box(modifier = with(Modifier) {
+            fillMaxSize()
+            paint(
+                painterResource(id = R.drawable.sunset),
+                contentScale = ContentScale.FillBounds
+            )
+        })
         Column(
-            modifier = Modifier.fillMaxSize().padding(32.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -130,18 +144,31 @@ fun AlarmRingScreen(
                 color = MaterialTheme.colorScheme.primary
             )
             Spacer(modifier = Modifier.height(16.dp))
-            Text(text = timeFormatted, fontSize = 64.sp)
+            Text(text = timeFormatted, fontSize = 64.sp, color = Color.White)
             Spacer(modifier = Modifier.height(16.dp))
-            Text(text = title, style = MaterialTheme.typography.headlineMedium)
+            Text(text = title, style = MaterialTheme.typography.headlineMedium, color = Color.White)
             Spacer(modifier = Modifier.height(64.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
-                OutlinedButton(onClick = onSnooze, modifier = Modifier.weight(1f)) {
-                    Text("Snooze")
-                }
-                Button(onClick = onDismiss, modifier = Modifier.weight(1f)) {
-                    Text("Dismiss")
-                }
+            TextButton(onClick = onSnooze) {
+                Text("Snooze", color = Color.White)
+            }
+            Button(onClick = onDismiss, modifier = Modifier
+                .padding(top = 16.dp)
+                .fillMaxWidth()) {
+                Text("Dismiss")
             }
         }
     }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun AlarmRingScreenPreview() {
+    AlarmRingScreen(
+        title = "Alarm",
+        time = System.currentTimeMillis(),
+        isSubAlarm = false,
+        onDismiss = { },
+        onSnooze = { }
+    )
 }
