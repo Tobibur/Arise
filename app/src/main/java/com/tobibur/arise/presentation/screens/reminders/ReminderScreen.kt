@@ -99,7 +99,8 @@ fun ReminderScreen(viewModel: ReminderViewModel = hiltViewModel()) {
                 editingReminder = reminder
                 showAddSheet = true
             },
-            onToggleCompleted = { id, completed -> viewModel.toggleCompleted(id, completed) }
+            onToggleCompleted = { id, completed -> viewModel.toggleCompleted(id, completed) },
+            onDeleteReminder = { id -> viewModel.delete(id) }
         )
 
         FloatingActionButton(
@@ -124,7 +125,8 @@ private fun ReminderContent(
     onDateSelected: (Long) -> Unit,
     onMonthClick: () -> Unit,
     onReminderClick: (Reminder) -> Unit,
-    onToggleCompleted: (Long, Boolean) -> Unit
+    onToggleCompleted: (Long, Boolean) -> Unit,
+    onDeleteReminder: (Long) -> Unit
 ) {
     val weekDays = remember(selectedDateMillis) { getWeekDays(selectedDateMillis) }
     val groupedReminders = remember(reminders, weekDays, todayMillis) {
@@ -147,7 +149,13 @@ private fun ReminderContent(
         if (groupedReminders.isEmpty()) {
             EmptyState()
         } else {
-            GroupedReminderList(groupedReminders, todayMillis, onReminderClick, onToggleCompleted)
+            GroupedReminderList(
+                groupedReminders,
+                todayMillis,
+                onReminderClick,
+                onToggleCompleted,
+                onDeleteReminder
+            )
         }
     }
 }
@@ -157,7 +165,8 @@ private fun GroupedReminderList(
     groups: List<Pair<Long, List<Reminder>>>,
     todayMillis: Long,
     onReminderClick: (Reminder) -> Unit,
-    onToggleCompleted: (Long, Boolean) -> Unit
+    onToggleCompleted: (Long, Boolean) -> Unit,
+    onDeleteReminder: (Long) -> Unit
 ) {
     LazyColumn(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
@@ -173,7 +182,8 @@ private fun GroupedReminderList(
                     onClick = onReminderClick,
                     onToggleCompleted = { toggled ->
                         onToggleCompleted(toggled.id, !toggled.isCompleted)
-                    }
+                    },
+                    onDelete = { onDeleteReminder(it.id) }
                 )
             }
         }

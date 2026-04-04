@@ -3,8 +3,8 @@ package com.tobibur.arise.presentation.screens.reminders
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tobibur.arise.domain.model.Reminder
+import com.tobibur.arise.domain.usecase.DeleteReminderUseCase
 import com.tobibur.arise.domain.usecase.GetAllRemindersUseCase
-import com.tobibur.arise.domain.usecase.GetReminderByIdUseCase
 import com.tobibur.arise.domain.usecase.SaveReminderUseCase
 import com.tobibur.arise.domain.usecase.ToggleReminderCompletedUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +18,8 @@ import javax.inject.Inject
 class ReminderViewModel @Inject constructor(
     private val getAllRemindersUseCase: GetAllRemindersUseCase,
     private val saveReminderUseCase: SaveReminderUseCase,
-    private val toggleCompletedUseCase: ToggleReminderCompletedUseCase
+    private val toggleCompletedUseCase: ToggleReminderCompletedUseCase,
+    private val deleteReminderUseCase: DeleteReminderUseCase
 ): ViewModel() {
     val reminders: StateFlow<List<Reminder>> = getAllRemindersUseCase()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
@@ -35,4 +36,8 @@ class ReminderViewModel @Inject constructor(
         ) }
     }
     fun toggleCompleted(id: Long, completed: Boolean) { viewModelScope.launch { toggleCompletedUseCase(id, completed) } }
+
+    fun delete(id: Long) {
+        viewModelScope.launch { deleteReminderUseCase(id) }
+    }
 }

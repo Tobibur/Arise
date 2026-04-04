@@ -33,7 +33,8 @@ fun DeleteAlarmBottomSheet(
     alarmTitle: String,
     sheetState: SheetState,
     onDismiss: () -> Unit,
-    onConfirmDelete: () -> Unit
+    onConfirmDelete: () -> Unit,
+    dialogTitle: String = "Delete Alarm"
 ) {
     val scope = rememberCoroutineScope()
     ModalBottomSheet(
@@ -54,7 +55,7 @@ fun DeleteAlarmBottomSheet(
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "Delete Alarm",
+                text = dialogTitle,
                 style = MaterialTheme.typography.titleLarge
             )
             Spacer(modifier = Modifier.height(8.dp))
